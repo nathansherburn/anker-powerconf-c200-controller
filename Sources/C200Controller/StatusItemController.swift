@@ -17,11 +17,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         self.openWindow = openWindow
         super.init()
 
-        if let button = statusItem.button {
-            let image = NSImage(systemSymbolName: "web.camera", accessibilityDescription: "C200 Controller")
-            image?.isTemplate = true
-            button.image = image
-        }
+        statusItem.button?.image = Self.cameraIcon()
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -29,6 +25,24 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         model.$connected
             .sink { [weak self] connected in self?.updateIcon(connected: connected) }
             .store(in: &cancellables)
+    }
+
+    /// The C200 seen from the front: a rounded-square body with a square lens window
+    /// and a round lens. A template image, so macOS tints it for the menu bar.
+    private static func cameraIcon() -> NSImage {
+        let image = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { rect in
+            let body = NSBezierPath(roundedRect: rect.insetBy(dx: 1.5, dy: 1.5), xRadius: 4.2, yRadius: 4.2)
+            body.append(NSBezierPath(roundedRect: rect.insetBy(dx: 4, dy: 4), xRadius: 2.3, yRadius: 2.3))
+            body.windingRule = .evenOdd
+            NSColor.black.setFill()
+            body.fill()
+            let lens: CGFloat = 5.8
+            NSBezierPath(ovalIn: NSRect(x: rect.midX - lens / 2, y: rect.midY - lens / 2, width: lens, height: lens)).fill()
+            return true
+        }
+        image.isTemplate = true
+        image.accessibilityDescription = "C200 Controller"
+        return image
     }
 
     private func updateIcon(connected: Bool) {
@@ -53,6 +67,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             warning.isEnabled = false
             menu.addItem(warning)
         }
+        menu.addItem(actionItem("Open Controller…", key: "o") { [openWindow] in openWindow() })
         menu.addItem(.separator())
 
         menu.addItem(presetsItem(enabled: connected))
@@ -72,7 +87,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
 
         menu.addItem(actionItem("Re-apply Settings", enabled: connected) { [model] in model.reapply() })
-        menu.addItem(actionItem("Open Controller…", key: "o") { [openWindow] in openWindow() })
         menu.addItem(.separator())
 
         let login = actionItem("Launch at Login") { [loginItem] in loginItem.setEnabled(!loginItem.isEnabled) }
