@@ -1,8 +1,21 @@
 # C200 Controller
 
-A small native macOS app for the **Anker PowerConf C200** webcam (USB `291a:3369`). It shows a live preview, gives you sliders and switches for the camera's settings, saves presets, and keeps your settings applied when the camera is reconnected.
+A small native macOS menu bar app for the **Anker PowerConf C200** webcam (USB `291a:3369`). It shows a live preview, gives you sliders and switches for the camera's settings, saves presets, and keeps your settings applied when the camera is reconnected.
 
 Not affiliated with Anker.
+
+## Menu bar
+
+The camera icon in the menu bar is always there while the app is running. It's dimmed when the C200 isn't connected. Its menu has:
+
+- presets, and a reset to the camera's defaults
+- field of view (95° / 78° / 65°)
+- mirror image and HDR
+- re-apply settings
+- **Open Controller…**, the full window with a live preview and every control
+- launch at login, and quit
+
+The app only shows a Dock icon while the controller window is open.
 
 ## Build
 
@@ -29,8 +42,8 @@ Sliders only appear for controls the camera reports. Their ranges and defaults c
 
 - **Presets** save every setting except values an auto mode is controlling (for example, exposure time while auto exposure is on).
 - The app remembers the last settings and re-applies them **on launch** and **whenever the camera is plugged back in**. The camera forgets its settings when it loses power.
-- **Closing the window** keeps the app running in the background so it can keep re-applying settings. Open the app again to bring the window back. Quit with ⌘Q.
-- **Launch at login** (bottom of the sidebar) starts the app in the background at login, with no window. macOS may ask you to allow it under System Settings › General › Login Items.
+- **Closing the window** leaves the app in the menu bar so it can keep re-applying settings. Reopen the window from the menu bar icon, or by opening the app again. Quit from the menu bar menu, or with ⌘Q while the window is open.
+- **Launch at login** (in the menu bar menu or at the bottom of the sidebar) starts the app in the menu bar at login, with no window. macOS may ask you to allow it under System Settings › General › Login Items.
 
 Settings are stored in `~/Library/Application Support/C200 Controller/settings.json`.
 

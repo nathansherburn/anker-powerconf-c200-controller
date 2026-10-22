@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let preview = PreviewController()
     private let loginItem = LoginItem()
     private let cameraActivity = CameraActivityMonitor()
+    private var statusItem: StatusItemController?
     private var window: NSWindow?
 
     /// Launched by the login agent: apply settings and stay out of the way.
@@ -32,6 +33,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         model.isCameraStreaming = { [cameraActivity] in cameraActivity.isStreaming }
         cameraActivity.onChange = { [model] streaming in model.cameraStreamingChanged(streaming) }
         model.start()
+        statusItem = StatusItemController(model: model, loginItem: loginItem) { [weak self] in
+            self?.showWindow()
+        }
         if !launchedInBackground {
             showWindow()
         }
@@ -66,8 +70,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.setActivationPolicy(.regular)
         let window = self.window ?? makeWindow()
         self.window = window
-        window.makeKeyAndOrderFront(nil)
+        // Activation is cooperative on macOS 14+, and a request from a menu bar item can be
+        // declined; ordering front regardless keeps the window from opening behind others.
         NSApp.activate()
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
         loginItem.refresh()
         preview.start()
         model.liveRefresh = true
@@ -90,7 +97,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         return window
     }
 
-    /// Closing the window drops the app into the background; it keeps watching for the
+    /// Closing the window leaves the app in the menu bar; it keeps watching for the
     /// camera so settings are re-applied on reconnect. Quit (⌘Q) exits fully.
     func windowWillClose(_ notification: Notification) {
         preview.stop()
