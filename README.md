@@ -59,3 +59,7 @@ Camera quirks found while building this (firmware 7.5):
 - **Sharpness below 50 reads back on a stretched scale while streaming.** For example, written 42 reads back as 36 and written 0 reads back as 217. The app corrects this when it reads the camera.
 - **Hue** is advertised (range 0–3) but does nothing, so it's hidden.
 - **Backlight compensation** reports a range of 0–0, and **gain** isn't supported.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
