@@ -32,12 +32,18 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private static func cameraIcon() -> NSImage {
         let image = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { rect in
             let body = NSBezierPath(roundedRect: rect.insetBy(dx: 1.5, dy: 1.5), xRadius: 4.2, yRadius: 4.2)
-            body.append(NSBezierPath(roundedRect: rect.insetBy(dx: 4, dy: 4), xRadius: 2.3, yRadius: 2.3))
+            // The lens sits above the body's centre, so the window's bottom edge is raised
+            // (a thicker bottom bar) to keep the lens centred in its window.
+            let lens: CGFloat = 5.8
+            let lensCentreY = rect.midY + 0.8
+            let windowTop = rect.maxY - 4
+            let windowBottom = 2 * lensCentreY - windowTop
+            let window = NSRect(x: rect.minX + 4, y: windowBottom, width: rect.width - 8, height: windowTop - windowBottom)
+            body.append(NSBezierPath(roundedRect: window, xRadius: 2.3, yRadius: 2.3))
             body.windingRule = .evenOdd
             NSColor.black.setFill()
             body.fill()
-            let lens: CGFloat = 5.8
-            NSBezierPath(ovalIn: NSRect(x: rect.midX - lens / 2, y: rect.midY - lens / 2, width: lens, height: lens)).fill()
+            NSBezierPath(ovalIn: NSRect(x: rect.midX - lens / 2, y: lensCentreY - lens / 2, width: lens, height: lens)).fill()
             return true
         }
         image.isTemplate = true
