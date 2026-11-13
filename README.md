@@ -24,7 +24,9 @@ The app only shows a Dock icon while the controller window is open.
 ./build.sh install    # also copies it to ~/Applications
 ```
 
-You only need the Xcode Command Line Tools. The app has no third-party dependencies. It's ad-hoc signed, so after each rebuild macOS asks for camera permission again.
+You only need the Xcode Command Line Tools. The app has no third-party dependencies.
+
+The first build creates a self-signed certificate called "C200 Controller Local Signing" in your login keychain and signs the app with it. Because the signature stays the same across rebuilds, macOS doesn't ask for camera permission again after each one.
 
 ## Controls
 
