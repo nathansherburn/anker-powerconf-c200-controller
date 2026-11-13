@@ -13,17 +13,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var statusItem: StatusItemController?
     private var window: NSWindow?
 
-    /// Launched by the login agent: apply settings and stay out of the way.
-    private let launchedInBackground = CommandLine.arguments.contains("--background")
+    /// Opened at login (or with --background): apply settings and stay out of the way.
+    private var launchedInBackground = false
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        if handOffToRunningInstance() {
-            exit(0)
-        }
-        NSApp.setActivationPolicy(launchedInBackground ? .accessory : .regular)
+        // No Dock icon until a window is shown; showWindow() switches to .regular.
+        NSApp.setActivationPolicy(.accessory)
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        launchedInBackground = LoginItem.wasLaunchedAtLogin || CommandLine.arguments.contains("--background")
+        if handOffToRunningInstance() {
+            exit(0)
+        }
         NSApp.mainMenu = makeMainMenu()
         DistributedNotificationCenter.default().addObserver(
             forName: Self.showWindowNotification, object: nil, queue: .main

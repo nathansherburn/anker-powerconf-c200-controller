@@ -14,10 +14,9 @@ swift build -c release
 BIN_DIR="$(swift build -c release --show-bin-path)"
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Library/LaunchAgents"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN_DIR/$EXECUTABLE" "$APP/Contents/MacOS/"
 cp Resources/Info.plist "$APP/Contents/"
-cp "Resources/$BUNDLE_ID.agent.plist" "$APP/Contents/Library/LaunchAgents/"
 [[ -f Resources/AppIcon.icns ]] || swift Scripts/make-icon.swift .
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 
